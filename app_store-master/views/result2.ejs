@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Zoe Ticket : Flights</title>
+    <% include result2/header/header_allContainer %>
+    <% include result2/header/header_result %>
+    <% include result2/header/header_right %>
+    <% include index/header/nav_style %>
+</head>
+
+<body style="padding: 0px;">
+    <!-- Stack the columns on mobile by making one full-width and the other half-width -->
+    <% include index/body/nav %>
+    <div class="container">
+        <div class="row result_container">
+            <div class="col-12"></div>
+            <!-- Context -->
+            <div class="col-12 col-md-8"><% include result2/body/airlinevia %></div>
+            <div class="col-6 col-md-4"><% include result2/body/siderightnav %></div>
+        </div>
+    </div>
+    
+    <% include result2/script/click_script %>
+    <% include index/script/nav_script %>
+</body>
+
+</html>

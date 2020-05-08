@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Zoe Ticket : Book</title>
+    <!-- Include styles -->
+    <% include book/header/header %>
+    <% include index/header/nav_style %>
+</head>
+<body style="padding: 0px;">
+    <% include index/body/nav %>
+    <div class="container">
+        <div class="row allContainer">
+            <div class="col-12 col-md-8 bookingContainer">
+                <% include book/body/booking %>
+            </div>
+            <div class="col-6 col-md-4 bookingDetailContainer">
+                <% include book/body/detail %>
+            </div>
+        </div>
+    </div>   
+    <% include book/script/_formCheck %>
+</body>
+</html>

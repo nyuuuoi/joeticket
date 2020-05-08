@@ -1,0 +1,96 @@
+<form action="/book" method="POST">
+<div class="table">
+    <div class="table_t">
+        <div class="table_tab">
+            <span>승객정보</span>
+        </div>
+        <div class="table_tabl">
+            <span></span>
+        </div>
+        <div class="table_table">
+        </div>
+        <div class="table_filed">                
+            <div class="able_line"></div>
+            <div class="table_d"></div>
+            <div class="table_da">
+                <div class="table_d1">
+                <span>성</span>       
+                </div>
+                <input class="table_d2" maxlength="50" name="lastname" id="lastname" type="text" title = "성을 입력해주세요" placeholder="ko" value="">
+            </div>
+            <div class="table_db">
+                <div class="table_d3">
+                <span>이름</span>
+                </div>
+                <input class="table_d4" maxlength="50" name="firstname" id="firstname" type="text" title = "이름을 입력해주세요" placeholder="gil dong" value="">
+            </div>  
+            <div class="table_dc">    
+                <div class="table_d5">
+                    <span>성별</span>
+                </div>
+                <div class="table_d6">
+                    <input type="radio" id="gender" name="gender" value="w"><span>여성</span>
+                    <input type="radio" id="gender" name="gender" value="m"><span>남성</span>
+                </div>
+            </div> 
+            <div class="table_dd">
+                <div class="table_d7">
+                    <span>생년월일</span>    
+                </div>
+                <input type="text" class="table_d8" name="birth" id="birth" maxlength="10" 
+                title = "YYYY-MM-DD 형식으로 입력하세요." placeholder="YYYY-MM-DD" onkeyup="javascript:checkDate();">
+            </div>
+            <div class="table_df">
+                <div class="table_d9">
+                    <span>국적</span>
+                </div>
+                <select class="table_de" aria-invalid="false" id="root_passengers_passenger1_nationality" name="nationality">
+                    <% include book_nation %>                                    
+                </select>
+            </div>
+        </div>
+
+        <div class="table_line2"></div>
+        <div class="table_detail_t"> 
+            <div class="table_detail_1">
+                <span style="font: bold;">연락처 상세정보</span>
+            </div>                               
+            <div class="table_detail_2">
+                <span>이 세부 정보는 예약 확인서를 보내고 중요한 비행 정보를 공유하는 데에만 사용합니다.</span>       
+            </div>                               
+            <div class="table_detail_3">
+                <span>이메일</span>
+            </div> 
+            <input class="table_detail_4" maxlength="255" name="email" id="email" type="email" title = "abcd@abcd.com 형식으로 입력해주세요" placeholder="abcd@abcd.com">       
+            <div class="table_detail_5">
+                <span>휴대 전화 번호</span>        
+            </div> 
+            <div class="table_detail_6">
+                <select class="table_detail_6-1" aria-invalid="false" id="y" name="phonecode" aria-label="D" style="width: 148px;">
+                    <% include book_call %>
+                </select>
+                <input class="table_detail_6-2" type="number" name="phone" id="phoneNums" maxlength="15" title = "-(hypen)을 제외한 숫자만 입력하세요." placeholder="-(hypen)을 제외한 숫자만 입력하세요." onkeyup="javascript:checkPhone();">
+            </div>
+                                                
+            <div class="table.cash">
+                <div class="table.cash-1">
+                    <div class="hiddenMongoId">
+                        <input name="flightsId" value="<%= info.id %>">
+                        <input name="checkReturn" value="<%= checkReturn %>">                        
+                    </div>
+                </div>
+                <div class="table.cash-2">
+                    <button type="submit" class="btn-red" id="submitButton" style="position: relative; top: 55px; left: 525px;">결제하기&nbsp;
+                        <span style="line-height: 1.125rem; display: inline-block; margin-top: 0.1rem; vertical-align: top;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="BpkIcon_bpk-icon--rtl-support__2Eb-P" style="width: 1.125rem; height: 1.125rem;">
+                                <path d="M14.4 19.5l5.7-5.3c.4-.4.7-.9.8-1.5.1-.3.1-.5.1-.7s0-.4-.1-.6c-.1-.6-.4-1.1-.8-1.5l-5.7-5.3c-.8-.8-2.1-.7-2.8.1-.8.8-.7 2.1.1 2.8l2.7 2.5H5c-1.1 0-2 .9-2 2s.9 2 2 2h9.4l-2.7 2.5c-.5.4-.7 1-.7 1.5s.2 1 .5 1.4c.8.8 2.1.8 2.9.1z">
+                                </path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>

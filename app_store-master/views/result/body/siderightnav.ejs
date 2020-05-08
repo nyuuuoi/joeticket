@@ -1,0 +1,128 @@
+<div class="navRightContainer">    
+    <div class="navSearchContainer">
+        <div class="navOriginInfoContainer">
+            <div class="navOriginFloat navOriginInfoWhere">
+                <span>
+                    <script>
+                        const urlAllParams = new URLSearchParams(window.location.search);
+                        const tripStart = urlAllParams.get('tripstart')
+                        const tripEnd = urlAllParams.get('tripend')
+                        document.write(tripStart+" - "+tripEnd)
+                    </script>
+                </span>
+            </div>
+            <div class="navOriginFloat navOriginInfoCal">
+                <span>
+                    <script>
+                        const tripdateParam = urlAllParams.get('tripdate')
+                        document.write(tripdateParam.substring(0,10))
+                    </script>                    
+                </span>
+            </div>
+            <div class="navOriginFloat navOriginInfoButton">
+                <button class="btn btn-link dropdown-toggle showRight" type="button" id="showRight"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+            </div>                  
+        </div>
+    </div>
+    <div class="hiddennavOrigin" id="hiddenRight">
+        <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="navOneway-tab" data-toggle="tab" href="#navOneway" role="tab" aria-controls="navOneway" aria-selected="true">Oneway</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="navReturn-tab" data-toggle="tab" href="#navReturn" role="tab" aria-controls="navReturn" aria-selected="false">Return</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="navOneway" role="tabpanel" aria-labelledby="navOneway-tab">
+                <form action="/result" method="GET" id="reSearchFormOneway" name="reSearchFormOneway">
+                    <div class="navOriginDepartureContainer">
+                        <div class="hiddenCheckReturn">
+                            <input name="viaSelect" value="oneway">
+                        </div>
+                        <div class="navOriginDepartureText">
+                            <span>From</span>
+                        </div>
+                        <div class="navOriginDepartureBox">
+                            <input class="form-control" id="navOriginDeparture_Oneway" name="tripstart">
+                        </div>
+                    </div>
+                    <div class="navOriginArrivalContainer">
+                        <div class="navOriginArrivalText">
+                            <span>To</span>
+                        </div>
+                        <div class="navOriginArrivalBox">
+                            <input class="form-control" id="navOriginArrival_Oneway" name="tripend">
+                        </div>
+                    </div>
+                    <div class="navOriginCalContainer">
+                        <div class="navOriginCalFloat navOriginDeparture">
+                            <div class="navOriginCalDepartureText">
+                                <span>Depart</span>
+                            </div>
+                            <div class="navOriginCalDepartureBox">
+                                <input class="form-control" id="navOriginCalDeparture_Oneway" name="tripdate">
+                            </div>
+                        </div>
+                        <div class="navOriginCalFloat navOriginArrival">
+                            <div class="navOriginCalArrivalText onewayUnable">
+                                <span>Return</span>
+                            </div>
+                            <div class="navOriginCalArrivalBox">
+                                <input class="form-control onewayUnable" id="navOriginCalArrival_Oneway" value="(One Way)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navOriginSubmit">
+                        <button type="submit" id="navOriginSubmitOneway" class="btn btn-primary btn-lg btn-block">Search</button>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="navReturn" role="tabpanel" aria-labelledby="navReturn-tab">
+                <form action="/result2" method="GET" id="reSearchFormReturn" name="reSearchFormReturn">
+                    <div class="navOriginDepartureContainer">
+                        <div class="hiddenCheckReturn">
+                            <input name="viaSelect" value="return">
+                        </div>
+                        <div class="navOriginDepartureText">
+                            <span>From</span>
+                        </div>
+                        <div class="navOriginDepartureBox">
+                            <input class="form-control" id="navOriginDeparture_Return" name="tripstart">
+                        </div>
+                    </div>
+                    <div class="navOriginArrivalContainer">
+                        <div class="navOriginArrivalText">
+                            <span>To</span>
+                        </div>
+                        <div class="navOriginArrivalBox">
+                            <input class="form-control" id="navOriginArrival_Return" name="tripend">
+                        </div>
+                    </div>
+                    <div class="navOriginCalContainer">
+                        <div class="navOriginCalFloat navOriginDeparture">
+                            <div class="navOriginCalDepartureText">
+                                <span>Depart</span>
+                            </div>
+                            <div class="navOriginCalDepartureBox">
+                                <input class="form-control" id="navOriginCalDeparture_Return" name="tripdate">
+                            </div>
+                        </div>
+                        <div class="navOriginCalFloat navOriginArrival">
+                            <div class="navOriginCalArrivalText">
+                                <span>Return</span>
+                            </div>
+                            <div class="navOriginCalArrivalBox">
+                                <input class="form-control" id="navOriginCalArrival_Return">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navOriginSubmit">
+                        <button type="submit" id="navOriginSubmitReturn" class="btn btn-primary btn-lg btn-block">Search</button>
+                    </div>
+                </form>
+            </div>            
+        </div>         
+    </div>  
+</div> 

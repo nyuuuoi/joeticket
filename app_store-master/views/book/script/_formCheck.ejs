@@ -1,0 +1,89 @@
+<script>
+    // 날짜 형식
+    function checkDate() {
+        var validformat = /^\d{4}\-\d{2}\-\d{2}$/; //Basic check for format validity
+        var $birthText = $("#birth")
+        var tlength = $birthText.val().length;
+        
+        if (tlength == 4) {
+            $birthText.val($birthText.val()+"-");
+        } else if (tlength == 7) {
+            $birthText.val($birthText.val()+"-");
+        } else if (tlength == 10) {
+            if (!validformat.test($birthText.val())){
+                alert("날짜 형식이 올바르지 않습니다.")
+                return false
+            }            
+        }
+    }
+
+    function checkPhone() {
+        if ($("#phoneNums").val().length>15){
+            alert("연락처가 올바른지 확인해주세요.")
+        }
+    }
+
+    // Check if the value is null or not?
+    $("#submitButton").click(function(){
+        if ($("#firstname").val()=="" || $("#lastname").val()==""){
+            alert("이름이 올바르지 않습니다.")
+            return false
+        }
+
+        if ($("#gender").val()==""){
+            alert("성별을 선택해주세요.")
+            return false
+        }
+
+        if ($("#email").val() == "") {
+            alert("이메일을 입력해주세요.")
+            return false
+        }
+
+        var validformat_email = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/; //Basic check for format validity
+        var $emailText = $("#email")
+        if (!validformat_email.test($emailText.val())) {
+            alert("이메일 형식이 올바르지 않습니다.")
+            return false
+        }
+
+        var validformat = /^\d{4}\-\d{2}\-\d{2}$/; //Basic check for format validity
+        var $birthText = $("#birth")
+        if (!validformat.test($birthText.val())){
+            alert("날짜 형식이 올바르지 않습니다.")
+            return false
+        }
+
+        var month = parseInt($birthText.val().substring(5, 7));
+        if ((month > 12) || (month < 01)) {
+            alert("날짜 형식이 올바르지 않습니다.")
+            return false
+        }
+        
+        var cal31 = [01,03,05,07,08,10,12]
+        var day = parseInt($birthText.val().substr(8, 2));
+        if (month==02) {
+            if ((day > 28) || (day < 00)) {
+                alert("날짜 형식이 올바르지 않습니다.")
+                return false
+            }
+        }
+        else if (cal31.includes(month)) {
+            if ((day > 31) || (day < 00)) {
+                alert("날짜 형식이 올바르지 않습니다.")
+                return false
+            }
+        }
+        else {
+            if ((day > 30) || (day < 00)) {
+                alert("날짜 형식이 올바르지 않습니다.")
+                return false
+            }
+        }
+
+        if ($("#phoneNums").val().length < 7) {
+            alert("연락처가 올바른지 확인해주세요.")
+            return false
+        }
+    })
+</script>

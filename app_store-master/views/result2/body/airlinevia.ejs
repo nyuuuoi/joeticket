@@ -1,0 +1,660 @@
+<!-- Table context -->
+<% for(var i=0; i<dbs.length; i++) {%>          
+    <!-- Ticket Table -->
+    <div class="divTicketTable" id="table<%= i %>">
+        <!-- Outbound -->
+        <div class="divTicketBody">
+            <!-- Array for Ticket Image -->
+            <% var carrierCode_list = []; %>
+            <% carrierCode_list.push(dbs[i].offerItems[0].services[0].segments[0].flightSegment.carrierCode); %>
+            <% if (dbs[i].offerItems[0].services[0].segments.length>1) {%>
+                <% for (var m=1; m<dbs[i].offerItems[0].services[0].segments.length; m++) { %>
+                    <% if (carrierCode_list.includes(dbs[i].offerItems[0].services[0].segments[m].flightSegment.carrierCode)) { %>
+                        <% continue %>
+                    <% } else { %>
+                        <% carrierCode_list.push(dbs[i].offerItems[0].services[0].segments[m].flightSegment.carrierCode); %>
+                    <% } %>
+                <% } %>
+            <% } %>            
+            <!-- Print Stop Code -->
+            <div class="divTicketFloat divTicketCodeImage">
+                <div class="divTicketCode">
+                    <% if (carrierCode_list.length>1) { %>                            
+                        <% var logo_src = "https://zoeticket.s3.us-east-2.amazonaws.com/public/images/logo/" + dbs[i].offerItems[0].services[0].segments[0].flightSegment.carrierCode + ".jpg";%>
+                        <img src= "<%= logo_src %>" >
+                        <% for (var a=1; a<carrierCode_list.length; a++) { %>
+                            <% if (a===1) { %>
+                                <% var tooltip_title = ""; %>
+                                <% tooltip_title += dict[0].carriers[carrierCode_list[a]] %>
+                            <% } else { %>
+                                <% tooltip_title += ", " + dict[0].carriers[carrierCode_list[a]] %>
+                            <% } %> 
+                        <% } %>
+                        <br>
+                        <span class="badge badge-light" data-toggle="tooltip" data-placement="bottom" title="<%= tooltip_title %>">
+                            <%= "+ " + String(carrierCode_list.length-1) %>
+                        </span>                          
+                    <% } else { %>
+                        <% var logo_src = "https://zoeticket.s3.us-east-2.amazonaws.com/public/images/logo/" + dbs[i].offerItems[0].services[0].segments[0].flightSegment.carrierCode + ".jpg";%>
+                        <img src= "<%= logo_src %>" >
+                    <% } %>
+                </div>
+                <!-- If exists MultiOperation -->
+                <div class="divTicketCodeMultiOperation">
+                    <% var carrierCode_Multi_List = []; %>
+                    <% for (var p=0; p<dbs[i].offerItems[0].services[0].segments.length; p++) { %>
+                        <% if (dbs[i].offerItems[0].services[0].segments[p].flightSegment.carrierCode 
+                        != dbs[i].offerItems[0].services[0].segments[p].flightSegment.operating.carrierCode) { %>
+                            <% if (carrierCode_Multi_List.includes(dict[0].carriers[dbs[i].offerItems[0].services[0].segments[p].flightSegment.operating.carrierCode])) { %>
+                                <% continue %>
+                            <% } else { %>
+                                <% carrierCode_Multi_List.push(dict[0].carriers[dbs[i].offerItems[0].services[0].segments[p].flightSegment.operating.carrierCode]); %>
+                            <% } %>
+                        <% } %>
+                    <% } %>
+                    <% if (carrierCode_Multi_List.length>=1) { %>
+                        <span><%= "Partly operated by " + carrierCode_Multi_List.join(", ") %>
+                    <% } %>                        
+                </div>
+            </div>
+
+            <!-- Print Departure -->
+            <div class="divTicketFloat divTicketDeparture">
+                <div class="divTicketDepTime"><%= dbs[i].offerItems[0].services[0].segments[0].flightSegment.departure.at.substring(11,16) %></div>
+                <div class="divTicketDepCode"><%= dbs[i].offerItems[0].services[0].segments[0].flightSegment.departure.iataCode %></div>
+            </div>
+
+            <!-- Print Stop -->
+            <div class="divTicketFloat divTicketStopContainer">
+                <% if (dbs[i].offerItems[0].services[0].segments.length>1) { %>
+                    <!-- Duration Calc -->
+                    <% var duration_multi_meta = [];
+                        var duration_multi_total = []; %>
+
+                    <% for (var k=0; k<dbs[i].offerItems[0].services[0].segments.length; k++) {%>
+                        <% duration_multi_meta.push(Number(dbs[i].offerItems[0].services[0].segments[k].flightSegment.duration.split("DT")[0]));
+                        duration_multi_meta.push(Number(dbs[i].offerItems[0].services[0].segments[k].flightSegment.duration.split("DT")[1].split("H")[0]));
+                        duration_multi_meta.push(Number(dbs[i].offerItems[0].services[0].segments[k].flightSegment.duration.split("DT")[1].split("H")[1].split("M")[0])); %>
+                    <% } %>
+                    <% for (var j=0; j<3; j++) {%>
+                        <% if (dbs[i].offerItems[0].services[0].segments.length==2) { %>
+                            <% duration_multi_total[j] = duration_multi_meta[j] + duration_multi_meta[j+3]; %>
+                        <% } else if (dbs[i].offerItems[0].services[0].segments.length==3) { %>
+                            <% duration_multi_total[j] = duration_multi_meta[j] + duration_multi_meta[j+3] + duration_multi_meta[j+6]; %>
+                        <% } else { %>
+                            <% duration_multi_total[j] = duration_multi_meta[j] + duration_multi_meta[j+3] + duration_multi_meta[j+6] + duration_multi_meta[j+9]; %>
+                        <% } %>                        
+                    <% } %>                                                
+                    <% if (duration_multi_total[2]>=60) {%>
+                        <% duration_multi_total[1] += 1;
+                        duration_multi_total[2] = duration_multi_total[2] - 60; %>
+                    <% } %>                
+                    <% if (duration_multi_total[1]>=24) {%>
+                        <% duration_multi_total[0] += 1;
+                        duration_multi_total[1] = duration_multi_total[1] - 24; %>
+                    <% } %>
+                    <!-- Print Flight Time -->
+                    <div class="divTicketStopTime">
+                        <% if (duration_multi_total[0]===0) { %>
+                            <% if (duration_multi_total[1]===0) { %>
+                                <span><%= duration_multi_total[2] + "분" %></span>
+                            <% } else if (duration_multi_total[2]===0) { %>
+                                <span><%= duration_multi_total[1] + "시간" %></span>
+                            <% } else { %>
+                                <span><%= duration_multi_total[1] + "시간 " + duration_multi_total[2] + "분" %></span>
+                            <% } %>
+                        <% } else { %>
+                            <span><%= duration_multi_total[0] + "일 " + duration_multi_total[1] + "시간 " + duration_multi_total[2] + "분" %></span>
+                        <% } %> 
+                    </div>
+                    <!-- Print Flight stops -->
+                    <div class="divTicketStopIcon">
+                        <div class="divTicketStopAirIcon">
+                            <img src=<%="https://zoeticket.s3.us-east-2.amazonaws.com/public/images/Poto/TicketStopAirIconLine"+dbs[i].offerItems[0].services[0].segments.length+".png"%>>
+                        </div>
+                        <div class="divTicketStopvia divTicketStoptimes">
+                            <span class="spanTicketStopvia"><%= "경유 "+(dbs[i].offerItems[0].services[0].segments.length-1)+"회 "%></span>
+                            <% if (dbs[i].offerItems[0].services[0].segments.length==2) { %>
+                                <span><%= dbs[i].offerItems[0].services[0].segments[1].flightSegment.arrival.iataCode%></span>
+                            <% } else if (dbs[i].offerItems[0].services[0].segments.length==3) { %>
+                                <span><%= dbs[i].offerItems[0].services[0].segments[0].flightSegment.arrival.iataCode +"," %> </span>
+                                <span><%= dbs[i].offerItems[0].services[0].segments[1].flightSegment.arrival.iataCode%></span>
+                            <% } else { %>
+                                <span><%= dbs[i].offerItems[0].services[0].segments[0].flightSegment.arrival.iataCode +","%></span>
+                                <span><%= dbs[i].offerItems[0].services[0].segments[1].flightSegment.arrival.iataCode +","%></span>
+                                <span><%= dbs[i].offerItems[0].services[0].segments[2].flightSegment.arrival.iataCode%></span>
+                            <% } %>                            
+                        </div>                       
+                    </div>       
+                <% } else { %>
+                    <!-- Print Flight Time -->
+                    <div class="divTicketStopTime">
+                        <% var duration_only_meta = []
+                        duration_only_meta.push(Number(dbs[i].offerItems[0].services[0].segments[0].flightSegment.duration.split("DT")[0]));
+                        duration_only_meta.push(Number(dbs[i].offerItems[0].services[0].segments[0].flightSegment.duration.split("DT")[1].split("H")[0]));
+                        duration_only_meta.push(Number(dbs[i].offerItems[0].services[0].segments[0].flightSegment.duration.split("DT")[1].split("H")[1].split("M")[0])) %>
+                        <% if (duration_only_meta[0]===0) { %>
+                            <% if (duration_only_meta[1]===0) { %>
+                                <span><%= duration_only_meta[2] + "분" %></span>
+                            <% } else if (duration_only_meta[2]===0) { %>
+                                <span><%= duration_only_meta[1] + "시간" %></span>
+                            <% } else { %>
+                                <span><%= duration_only_meta[1] + "시간 " + duration_only_meta[2] + "분" %></span>
+                            <% } %>
+                        <% } else { %>
+                            <span><%= duration_only_meta[0] + "일 " + duration_only_meta[1] + "시간 " + duration_only_meta[2] + "분" %></span>
+                        <% } %>                        
+                    </div>
+                    <!-- Print Flight stops -->
+                    <div class="divTicketStopIcon">
+                        <div class="divTicketStopAirIcon">
+                            <img src="https://zoeticket.s3.us-east-2.amazonaws.com/public/images/Poto/TicketStopAirIconLine.png">
+                        </div>
+                        <div class="divTicketStopStraight">
+                            <span>직항</span>
+                        </div>                       
+                    </div>
+                <% } %>                       
+            </div>                
+            <!-- Print Arrival -->
+            <div class="divTicketFloat divTicketArrival">         
+                <div class="divTicketArrTime"><%= dbs[i].offerItems[0].services[0].segments[dbs[i].offerItems[0].services[0].segments.length-1].flightSegment.arrival.at.substring(11,16) %></div>
+                <div class="divTicketArrCode"><%= dbs[i].offerItems[0].services[0].segments[dbs[i].offerItems[0].services[0].segments.length-1].flightSegment.arrival.iataCode %></div>                    
+            </div>
+            <!-- Print Cost -->
+            <div class="divTicketFareAndContainer">
+                <div class="divTicketFloat divTicketFareContainer">
+                    <div class="divTicketFare">
+                        <a class="buttonForbook" id="booking<%=i %>" getNum="<%=i %>" style="cursor:pointer">                        
+                            <%= "₩" 
+                            + (dbs[i].offerItems[0].price.total
+                            + dbs[i].offerItems[0].price.totalTaxes).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); %>
+                        </a>
+                    </div>
+                    <!-- Book Button -->
+                    <div class="divTicketButton">
+                        <a class="buttonForbook" id="selecting<%=i %>" getNum="<%=i %>">
+                            <span class="divTicketFaretext badge badge-secondary buttonForbook" id="selecting<%=i %>" getNum="<%=i %>" style="cursor:pointer">
+                                Select ✈️
+                            </span>
+                        </a>
+                    </div>  
+                </div>
+                <!-- Button for hidden panel -->
+                <div class="divTicketFloat divTicketButtonContainer">
+                    <button class="btn btn-link dropdown-toggle showdiv" type="button" id="container<%= i %>"
+                            whereid="<%= i %>"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>   
+                </div>
+            </div>
+        </div>
+        <!-- Return -->
+        <div class="divTicketBodyVia">
+            <!-- Array for Ticket Image -->
+            <% var carrierCode_list = []; %>
+            <% carrierCode_list.push(dbs[i].offerItems[0].services[1].segments[0].flightSegment.carrierCode); %>
+            <% if (dbs[i].offerItems[0].services[1].segments.length>1) {%>
+                <% for (var m=1; m<dbs[i].offerItems[0].services[1].segments.length; m++) { %>
+                    <% if (carrierCode_list.includes(dbs[i].offerItems[0].services[1].segments[m].flightSegment.carrierCode)) { %>
+                        <% continue %>
+                    <% } else { %>
+                        <% carrierCode_list.push(dbs[i].offerItems[0].services[1].segments[m].flightSegment.carrierCode); %>
+                    <% } %>
+                <% } %>
+            <% } %>            
+            <!-- Print Stop Code -->
+            <div class="divTicketFloat divTicketCodeImage">
+                <div class="divTicketCode">
+                    <% if (carrierCode_list.length>1) { %>                            
+                        <% var logo_src = "https://zoeticket.s3.us-east-2.amazonaws.com/public/images/logo/" + dbs[i].offerItems[0].services[1].segments[0].flightSegment.carrierCode + ".jpg";%>
+                        <img src= "<%= logo_src %>" >
+                        <% for (var a=1; a<carrierCode_list.length; a++) { %>
+                            <% if (a===1) { %>
+                                <% var tooltip_title = ""; %>
+                                <% tooltip_title += dict[0].carriers[carrierCode_list[a]] %>
+                            <% } else { %>
+                                <% tooltip_title += ", " + dict[0].carriers[carrierCode_list[a]] %>
+                            <% } %> 
+                        <% } %>
+                        <br>
+                        <span class="badge badge-light" data-toggle="tooltip" data-placement="bottom" title="<%= tooltip_title %>">
+                            <%= "+ " + String(carrierCode_list.length-1) %>
+                        </span>                          
+                    <% } else { %>
+                        <% var logo_src = "https://zoeticket.s3.us-east-2.amazonaws.com/public/images/logo/" + dbs[i].offerItems[0].services[1].segments[0].flightSegment.carrierCode + ".jpg";%>
+                        <img src= "<%= logo_src %>" >
+                    <% } %>
+                </div>
+                <!-- If exists MultiOperation -->
+                <div class="divTicketCodeMultiOperation">
+                    <% var carrierCode_Multi_List = []; %>
+                    <% for (var p=0; p<dbs[i].offerItems[0].services[1].segments.length; p++) { %>
+                        <% if (dbs[i].offerItems[0].services[1].segments[p].flightSegment.carrierCode 
+                        != dbs[i].offerItems[0].services[1].segments[p].flightSegment.operating.carrierCode) { %>
+                            <% if (carrierCode_Multi_List.includes(dict[0].carriers[dbs[i].offerItems[0].services[1].segments[p].flightSegment.operating.carrierCode])) { %>
+                                <% continue %>
+                            <% } else { %>
+                                <% carrierCode_Multi_List.push(dict[0].carriers[dbs[i].offerItems[0].services[1].segments[p].flightSegment.operating.carrierCode]); %>
+                            <% } %>
+                        <% } %>
+                    <% } %>
+                    <% if (carrierCode_Multi_List.length>=1) { %>
+                        <span><%= "Partly operated by " + carrierCode_Multi_List.join(", ") %>
+                    <% } %>                        
+                </div>
+            </div>
+
+            <!-- Print Departure -->
+            <div class="divTicketFloat divTicketDeparture">
+                <div class="divTicketDepTime"><%= dbs[i].offerItems[0].services[1].segments[0].flightSegment.departure.at.substring(11,16) %></div>
+                <div class="divTicketDepCode"><%= dbs[i].offerItems[0].services[1].segments[0].flightSegment.departure.iataCode %></div>
+            </div>
+
+            <!-- Print Stop -->
+            <div class="divTicketFloat divTicketStopContainer">
+                <% if (dbs[i].offerItems[0].services[1].segments.length>1) { %>
+                    <!-- Duration Calc -->
+                    <% var duration_multi_meta = [];
+                        var duration_multi_total = []; %>
+
+                    <% for (var k=0; k<dbs[i].offerItems[0].services[1].segments.length; k++) {%>
+                        <% duration_multi_meta.push(Number(dbs[i].offerItems[0].services[1].segments[k].flightSegment.duration.split("DT")[0]));
+                        duration_multi_meta.push(Number(dbs[i].offerItems[0].services[1].segments[k].flightSegment.duration.split("DT")[1].split("H")[0]));
+                        duration_multi_meta.push(Number(dbs[i].offerItems[0].services[1].segments[k].flightSegment.duration.split("DT")[1].split("H")[1].split("M")[0])); %>
+                    <% } %>
+                    <% for (var j=0; j<3; j++) {%>
+                        <% if (dbs[i].offerItems[0].services[1].segments.length==2) { %>
+                            <% duration_multi_total[j] = duration_multi_meta[j] + duration_multi_meta[j+3]; %>
+                        <% } else if (dbs[i].offerItems[0].services[1].segments.length==3) { %>
+                            <% duration_multi_total[j] = duration_multi_meta[j] + duration_multi_meta[j+3] + duration_multi_meta[j+6]; %>
+                        <% } else { %>
+                            <% duration_multi_total[j] = duration_multi_meta[j] + duration_multi_meta[j+3] + duration_multi_meta[j+6] + duration_multi_meta[j+9]; %>
+                        <% } %>                        
+                    <% } %>                                                
+                    <% if (duration_multi_total[2]>=60) {%>
+                        <% duration_multi_total[1] += 1;
+                        duration_multi_total[2] = duration_multi_total[2] - 60; %>
+                    <% } %>                
+                    <% if (duration_multi_total[1]>=24) {%>
+                        <% duration_multi_total[0] += 1;
+                        duration_multi_total[1] = duration_multi_total[1] - 24; %>
+                    <% } %>
+                    <!-- Print Flight Time -->
+                    <div class="divTicketStopTime">
+                        <% if (duration_multi_total[0]===0) { %>
+                            <% if (duration_multi_total[1]===0) { %>
+                                <span><%= duration_multi_total[2] + "분" %></span>
+                            <% } else if (duration_multi_total[2]===0) { %>
+                                <span><%= duration_multi_total[1] + "시간" %></span>
+                            <% } else { %>
+                                <span><%= duration_multi_total[1] + "시간 " + duration_multi_total[2] + "분" %></span>
+                            <% } %>
+                        <% } else { %>
+                            <span><%= duration_multi_total[0] + "일 " + duration_multi_total[1] + "시간 " + duration_multi_total[2] + "분" %></span>
+                        <% } %> 
+                    </div>
+                    <!-- Print Flight stops -->
+                    <div class="divTicketStopIcon">
+                        <div class="divTicketStopAirIcon">
+                            <img src=<%="https://zoeticket.s3.us-east-2.amazonaws.com/public/images/Poto/TicketStopAirIconLine"+dbs[i].offerItems[0].services[1].segments.length+".png"%>>
+                        </div>
+                        <div class="divTicketStopvia divTicketStoptimes">
+                            <span class="spanTicketStopvia"><%= "경유 "+(dbs[i].offerItems[0].services[1].segments.length-1)+"회 "%></span>
+                            <% if (dbs[i].offerItems[0].services[1].segments.length==2) { %>
+                                <span><%= dbs[i].offerItems[0].services[1].segments[1].flightSegment.arrival.iataCode%></span>
+                            <% } else if (dbs[i].offerItems[0].services[1].segments.length==3) { %>
+                                <span><%= dbs[i].offerItems[0].services[1].segments[0].flightSegment.arrival.iataCode +"," %> </span>
+                                <span><%= dbs[i].offerItems[0].services[1].segments[1].flightSegment.arrival.iataCode%></span>
+                            <% } else { %>
+                                <span><%= dbs[i].offerItems[0].services[1].segments[0].flightSegment.arrival.iataCode +","%></span>
+                                <span><%= dbs[i].offerItems[0].services[1].segments[1].flightSegment.arrival.iataCode +","%></span>
+                                <span><%= dbs[i].offerItems[0].services[1].segments[2].flightSegment.arrival.iataCode%></span>
+                            <% } %>                            
+                        </div>                       
+                    </div>       
+                <% } else { %>
+                    <!-- Print Flight Time -->
+                    <div class="divTicketStopTime">
+                        <% var duration_only_meta = []
+                        duration_only_meta.push(Number(dbs[i].offerItems[0].services[1].segments[0].flightSegment.duration.split("DT")[0]));
+                        duration_only_meta.push(Number(dbs[i].offerItems[0].services[1].segments[0].flightSegment.duration.split("DT")[1].split("H")[0]));
+                        duration_only_meta.push(Number(dbs[i].offerItems[0].services[1].segments[0].flightSegment.duration.split("DT")[1].split("H")[1].split("M")[0])) %>
+                        <% if (duration_only_meta[0]===0) { %>
+                            <% if (duration_only_meta[1]===0) { %>
+                                <span><%= duration_only_meta[2] + "분" %></span>
+                            <% } else if (duration_only_meta[2]===0) { %>
+                                <span><%= duration_only_meta[1] + "시간" %></span>
+                            <% } else { %>
+                                <span><%= duration_only_meta[1] + "시간 " + duration_only_meta[2] + "분" %></span>
+                            <% } %>
+                        <% } else { %>
+                            <span><%= duration_only_meta[0] + "일 " + duration_only_meta[1] + "시간 " + duration_only_meta[2] + "분" %></span>
+                        <% } %>                        
+                    </div>
+                    <!-- Print Flight stops -->
+                    <div class="divTicketStopIcon">
+                        <div class="divTicketStopAirIcon">
+                            <img src="https://zoeticket.s3.us-east-2.amazonaws.com/public/images/Poto/TicketStopAirIconLine.png">
+                        </div>
+                        <div class="divTicketStopStraight">
+                            <span>직항</span>
+                        </div>                       
+                    </div>
+                <% } %>                       
+            </div>                
+            <!-- Print Arrival -->
+            <div class="divTicketFloat divTicketArrival">         
+                <div class="divTicketArrTime"><%= dbs[i].offerItems[0].services[1].segments[dbs[i].offerItems[0].services[1].segments.length-1].flightSegment.arrival.at.substring(11,16) %></div>
+                <div class="divTicketArrCode"><%= dbs[i].offerItems[0].services[1].segments[dbs[i].offerItems[0].services[1].segments.length-1].flightSegment.arrival.iataCode %></div>                    
+            </div>
+        </div>          
+    </div>
+    <!-- Hidden Panel for Via -->
+    <div class ="divTicketRouteContainer" id="route<%= i %>">
+        <!-- Outbound -->
+        <div class="empty1">
+                <div class="empty2">
+                    <span>가는 편</span>
+                </div>
+            </div>
+        <!-- <span style="position: relative; top: 30px; left: 10px;
+        font-size: 14px; font-weight:bold;">가는 편</span> -->
+        <% for (let t=0; t<dbs[i].offerItems[0].services[0].segments.length; t++) { %>
+
+        <div class="test01">
+            <div class="test02">
+    
+            </div>
+            <div class = "divTicketRoute">
+                <div class = "divRouteFloat divRouteStopContainer">
+                    <% if (dbs[i].offerItems[0].services[0].segments.length>1) { %>
+                        <!-- Print Route Stop time -->
+                        <div class = "divRouteStopFloat divRouteStopTime">                            
+                            <% if (duration_multi_meta[3*t]===0) { %>
+                                <% if (duration_multi_meta[3*t+1]===0) { %>
+                                    <span><%= duration_multi_meta[3*t+2] + "분" %></span>
+                                <% } else if (duration_multi_meta[3*t+2]===0) { %>
+                                    <span><%= duration_multi_meta[3*t+1] + "시간" %></span>
+                                <% } else { %>
+                                    <span><%= duration_multi_meta[3*t+1] + "시간 " + duration_multi_meta[3*t+2] + "분" %></span>
+                                <% } %>                                
+                            <% } else { %>
+                                <span><%= duration_multi_meta[3*t] + "일 " + duration_multi_meta[3*t+1] + "시간 " + duration_multi_meta[3*t+2] + "분" %></span>
+                            <% } %> 
+                        </div>
+                    <% } else { %>
+                        <!-- Print Route Stop time -->
+                        <div class = "divRouteStopFloat divRouteStopTime">
+                            <% if (duration_only_meta[3*t]===0) { %>
+                                <% if (duration_only_meta[3*t+1]===0) { %>
+                                    <span><%= duration_only_meta[3*t+2] + "분" %></span>
+                                <% } else if (duration_only_meta[3*t+2]===0) { %>
+                                    <span><%= duration_only_meta[3*t+1] + "시간" %></span>
+                                <% } else { %>
+                                    <span><%= duration_only_meta[3*t+1] + "시간 " + duration_only_meta[3*t+2] + "분" %></span>
+                                <% } %>                                
+                            <% } else { %>
+                                <span><%= duration_only_meta[3*t] + "일 " + duration_only_meta[3*t+1] + "시간 " + duration_only_meta[3*t+2] + "분" %></span>
+                            <% } %> 
+                        </div>
+                    <% } %>
+                    <!-- Print Route Stop Icon -->
+                    <div class = "divRouteStopFloat divRouteStopIcon">
+                        <img src="https://zoeticket.s3.us-east-2.amazonaws.com/public/images/Poto/RouteStopIconLine.png">
+                    </div>                   
+                </div>                
+                <div class = "divRouteFloat divRouteTimeContainer">
+                    <!-- Print departure time -->
+                    <div class = "divRouteTimeDeparture">
+                        <span class = "divRouteTimeDepartureText">
+                            <%= dbs[i].offerItems[0].services[0].segments[t].flightSegment.departure.at.substring(11,16) %>
+                        </span>
+                    </div>
+                    <!-- Print Arrival time -->
+                    <div class = "divRouteTimeArrive">
+                        <span class = "divRouteTimeArriveText">
+                            <%= dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.at.substring(11,16) %>
+                        </span>
+                    </div>
+                </div>
+                <div class = "divRouteFloat divRouteRouteContainer">
+                    <div class = "divRouteRouteDeparture">
+                        <span class = "divRouteRouteDepartureText">
+                            <%= dbs[i].offerItems[0].services[0].segments[t].flightSegment.departure.iataCode %>
+                        </span>
+                        <span class = "divRouteRouteDepartureText">
+                            ( <%= dict[1].locations[dbs[i].offerItems[0].services[0].segments[t].flightSegment.departure.iataCode].detailedName %> )
+                        </span>
+                    </div>
+                    <div class = "divRouteRouteArrive">
+                        <span class = "divRouteRouteArriveText">
+                            <%= dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.iataCode %>
+                        </span>
+                        <span class = "divRouteRouteArriveText">
+                            ( <%= dict[1].locations[dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.iataCode].detailedName %> )
+                        </span>
+                    </div>
+                </div>                       
+            </div>
+        </div>
+
+            <% if (t!=dbs[i].offerItems[0].services[0].segments.length-1) { %>
+                <!-- Route Total time, airport etc-->
+                <div class = "divTicketRouteConnectionRow">
+                    <div class = "divTicketRouteChangefloat divTicketRouteChangeTime">
+                        <% let wait_time_hour = dbs[i].offerItems[0].services[0].segments[t+1].flightSegment.departure.at.substring(11,13) -
+                        dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.at.substring(11,13)
+                        let wait_time_min = dbs[i].offerItems[0].services[0].segments[t+1].flightSegment.departure.at.substring(14,16) -
+                        dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.at.substring(14,16) %>
+                        <% if (wait_time_min <0) { %>
+                            <% wait_time_hour -= 1
+                                wait_time_min += 60 %>
+                        <% } %>
+                        <% if (wait_time_hour <0) { %>
+                            <% wait_time_hour += 24 %>
+                        <% } %>                            
+                        <% if (wait_time_min === 0) { %>
+                            <span><%= wait_time_hour + "시간" %></span>
+                        <% } else if (wait_time_hour === 0) { %>
+                            <span><%= wait_time_min + "분" %></span>
+                        <% } else { %>
+                            <span><%= wait_time_hour + "시간 " + wait_time_min + "분" %></span>
+                        <% } %>
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteChangeAirport">                            
+                        <% if (dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.iataCode 
+                        === dbs[i].offerItems[0].services[0].segments[t+1].flightSegment.departure.iataCode) { %>
+                            <span> Connect in airport </span>
+                        <% } else { %>
+                            <span>CHANGE AIRPORT</span>
+                        <% } %>                            
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteChangeText">
+                        <% if (wait_time_hour >= 3) { %>
+                            <span>Long Wait</span>
+                        <% } %>
+                    </div>
+                </div>   
+            <% } else { %>
+                <div class = "divTicketRouteConnectionLast">
+                    <div class = "divTicketRouteChangefloat divTicketRouteArrives">
+                        <% var date_for_DOW = new Date(dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.at);%>
+                        <span class="divTicketRouteLastText">Arrives:</span>
+                        <span><%= dbs[i].offerItems[0].services[0].segments[t].flightSegment.arrival.at.substring(0,10) + " " 
+                        + date_for_DOW.toString().substring(0,3) %></span>
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteBar">
+                        <span> | </span>
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteDuration">
+                        <span class="divTicketRouteLastText">Journey duration:</span>
+                        <% let journey1 = moment(dbs[i].offerItems[0].services[0].segments[0].flightSegment.departure.at);                                                     
+                        let journey2 = moment(dbs[i].offerItems[0].services[0].segments[dbs[i].offerItems[0].services[0].segments.length-1].flightSegment.arrival.at); %>
+                        <% if (journey2.diff(journey1)/(1000*60*60)===0) {%>
+                            <span><%= journey2.diff(journey1)/(1000*60) + "분" %></span>
+                        <% } else if (journey2.diff(journey1)% (1000*60*60) ===0) { %>
+                            <span><%= (Math.floor(journey2.diff(journey1)/(1000*60*60))) + "시간" %></span>
+                        <% } else { %>
+                            <span><%= (Math.floor(journey2.diff(journey1)/(1000*60*60))) + "시간 " 
+                            + (journey2.diff(journey1)/(1000*60) - (Math.floor(journey2.diff(journey1)/(1000*60*60))*60)) + "분" %></span>
+                        <% } %>                            
+                    </div>
+                </div>
+            <% } %>              
+        <% } %>
+        <!-- Return -->
+        <div class="empty1">
+            <div class="empty2">
+                <span>오는 편</span>
+            </div>
+        </div>
+        <% for (let t=0; t<dbs[i].offerItems[0].services[1].segments.length; t++) { %>
+            
+    <div class="test03">
+            <div class = "divTicketRoute">
+                <div class = "divRouteFloat divRouteStopContainer">
+                    <% if (dbs[i].offerItems[0].services[1].segments.length>1) { %>
+                        <!-- Print Route Stop time -->
+                        <div class = "divRouteStopFloat divRouteStopTime">                            
+                            <% if (duration_multi_meta[3*t]===0) { %>
+                                <% if (duration_multi_meta[3*t+1]===0) { %>
+                                    <span><%= duration_multi_meta[3*t+2] + "분" %></span>
+                                <% } else if (duration_multi_meta[3*t+2]===0) { %>
+                                    <span><%= duration_multi_meta[3*t+1] + "시간" %></span>
+                                <% } else { %>
+                                    <span><%= duration_multi_meta[3*t+1] + "시간 " + duration_multi_meta[3*t+2] + "분" %></span>
+                                <% } %>                                
+                            <% } else { %>
+                                <span><%= duration_multi_meta[3*t] + "일 " + duration_multi_meta[3*t+1] + "시간 " + duration_multi_meta[3*t+2] + "분" %></span>
+                            <% } %> 
+                        </div>
+                    <% } else { %>
+                        <!-- Print Route Stop time -->
+                        <div class = "divRouteStopFloat divRouteStopTime">
+                            <% if (duration_only_meta[3*t]===0) { %>
+                                <% if (duration_only_meta[3*t+1]===0) { %>
+                                    <span><%= duration_only_meta[3*t+2] + "분" %></span>
+                                <% } else if (duration_only_meta[3*t+2]===0) { %>
+                                    <span><%= duration_only_meta[3*t+1] + "시간" %></span>
+                                <% } else { %>
+                                    <span><%= duration_only_meta[3*t+1] + "시간 " + duration_only_meta[3*t+2] + "분" %></span>
+                                <% } %>                                
+                            <% } else { %>
+                                <span><%= duration_only_meta[3*t] + "일 " + duration_only_meta[3*t+1] + "시간 " + duration_only_meta[3*t+2] + "분" %></span>
+                            <% } %> 
+                        </div>
+                    <% } %>
+                    <!-- Print Route Stop Icon -->
+                    <div class = "divRouteStopFloat divRouteStopIcon">
+                        <img src="https://zoeticket.s3.us-east-2.amazonaws.com/public/images/Poto/RouteStopIconLine.png">
+                    </div>                   
+                </div>                
+                <div class = "divRouteFloat divRouteTimeContainer">
+                    <!-- Print departure time -->
+                    <div class = "divRouteTimeDeparture">
+                        <span class = "divRouteTimeDepartureText">
+                            <%= dbs[i].offerItems[0].services[1].segments[t].flightSegment.departure.at.substring(11,16) %>
+                        </span>
+                    </div>
+                    <!-- Print Arrival time -->
+                    <div class = "divRouteTimeArrive">
+                        <span class = "divRouteTimeArriveText">
+                            <%= dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.at.substring(11,16) %>
+                        </span>
+                    </div>
+                </div>
+                <div class = "divRouteFloat divRouteRouteContainer">
+                    <div class = "divRouteRouteDeparture">
+                        <span class = "divRouteRouteDepartureText">
+                            <%= dbs[i].offerItems[0].services[1].segments[t].flightSegment.departure.iataCode %>
+                        </span>
+                        <span class = "divRouteRouteDepartureText">
+                            ( <%= dict[1].locations[dbs[i].offerItems[0].services[1].segments[t].flightSegment.departure.iataCode].detailedName %> )
+                        </span>
+                    </div>
+                    <div class = "divRouteRouteArrive">
+                        <span class = "divRouteRouteArriveText">
+                            <%= dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.iataCode %>
+                        </span>
+                        <span class = "divRouteRouteArriveText">
+                            ( <%= dict[1].locations[dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.iataCode].detailedName %> )
+                        </span>
+                    </div>
+                </div>                       
+            </div>
+        </div>
+            <% if (t!=dbs[i].offerItems[0].services[1].segments.length-1) { %>
+                <!-- Route Total time, airport etc-->
+                <div class = "divTicketRouteConnectionRow">
+                    <div class = "divTicketRouteChangefloat divTicketRouteChangeTime">
+                        <% let wait_time_hour = dbs[i].offerItems[0].services[1].segments[t+1].flightSegment.departure.at.substring(11,13) -
+                        dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.at.substring(11,13)
+                        let wait_time_min = dbs[i].offerItems[0].services[1].segments[t+1].flightSegment.departure.at.substring(14,16) -
+                        dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.at.substring(14,16) %>
+                        <% if (wait_time_min <0) { %>
+                            <% wait_time_hour -= 1
+                                wait_time_min += 60 %>
+                        <% } %>
+                        <% if (wait_time_hour <0) { %>
+                            <% wait_time_hour += 24 %>
+                        <% } %>                            
+                        <% if (wait_time_min === 0) { %>
+                            <span><%= wait_time_hour + "시간" %></span>
+                        <% } else if (wait_time_hour === 0) { %>
+                            <span><%= wait_time_min + "분" %></span>
+                        <% } else { %>
+                            <span><%= wait_time_hour + "시간 " + wait_time_min + "분" %></span>
+                        <% } %>
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteChangeAirport">                            
+                        <% if (dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.iataCode 
+                        === dbs[i].offerItems[0].services[1].segments[t+1].flightSegment.departure.iataCode) { %>
+                            <span> Connect in airport </span>
+                        <% } else { %>
+                            <span>CHANGE AIRPORT</span>
+                        <% } %>                            
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteChangeText">
+                        <% if (wait_time_hour >= 3) { %>
+                            <span>Long Wait</span>
+                        <% } %>
+                    </div>
+                </div>   
+            <% } else { %>
+                <div class = "divTicketRouteConnectionLast">
+                    <div class = "divTicketRouteChangefloat divTicketRouteArrives">
+                        <% var date_for_DOW = new Date(dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.at);%>
+                        <span class="divTicketRouteLastText">Arrives:</span>
+                        <span><%= dbs[i].offerItems[0].services[1].segments[t].flightSegment.arrival.at.substring(0,10) + " " 
+                        + date_for_DOW.toString().substring(0,3) %></span>
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteBar">
+                        <span> | </span>
+                    </div>
+                    <div class = "divTicketRouteChangefloat divTicketRouteDuration">
+                        <span class="divTicketRouteLastText">Journey duration:</span>
+                        <% let journey1 = moment(dbs[i].offerItems[0].services[1].segments[0].flightSegment.departure.at);                                                     
+                        let journey2 = moment(dbs[i].offerItems[0].services[1].segments[dbs[i].offerItems[0].services[1].segments.length-1].flightSegment.arrival.at); %>
+                        <% if (journey2.diff(journey1)/(1000*60*60)===0) {%>
+                            <span><%= journey2.diff(journey1)/(1000*60) + "분" %></span>
+                        <% } else if (journey2.diff(journey1)% (1000*60*60) ===0) { %>
+                            <span><%= (Math.floor(journey2.diff(journey1)/(1000*60*60))) + "시간" %></span>
+                        <% } else { %>
+                            <span><%= (Math.floor(journey2.diff(journey1)/(1000*60*60))) + "시간 " 
+                            + (journey2.diff(journey1)/(1000*60) - (Math.floor(journey2.diff(journey1)/(1000*60*60))*60)) + "분" %></span>
+                        <% } %>                            
+                    </div>
+                </div>
+            <% } %>              
+        <% } %>    
+    </div>
+    
+    
+    <!-- Making a space -->
+    <br>
+    <div class="hiddenInput">
+        <form action="/book" method="GET" id="sendMongoId<%=i %>">
+            <input id="getMongoID" name="flightsId" value="<%=dbs[i].id %>">
+            <input id="checkReturn" name="checkReturn" value="return">
+        </form>
+    </div>
+<% } %>

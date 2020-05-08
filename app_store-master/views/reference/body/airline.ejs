@@ -1,0 +1,68 @@
+<head>
+</head>
+
+<body>
+    <div class="Nbody">
+        <h1 class="Nbody_head">예약조회</h1>
+    <div class="Nbody_body">
+        <ul class="Nbody_body_1">
+            <li class="Nbody_body_2"><span class="Nbody_body_2_1">선택</span><a href="javascript:void(0);" id="tabActivePnr">예약조회</a></li>
+            <li class="Nbody_body_3"><a href="javascript:void(0);" class="Nbody_body_3_1"></a></li>
+        </ul>
+    </div>
+    <div class="Nbody_main">
+        <div class="Nbody_main_1">               
+            <br><br>                
+            <% flighttype = bookCopy.offerItems[0].services.length; %>
+            <!-- flighttype==2 는 왕복, flighttype==1 는 편도 -->
+            <% for (i=0; i<flighttype; i++) {%>
+                <% if(i!=0) { %>
+                    <br><br>
+                <%}%>
+                <h5>Ticket <%= i+1 %></h5>
+                <div class="divTicketTable" id="table<%= i %>">
+                    <div class="divTicketCode">
+                        <span>이름/NAME</span><br>
+                        <span><h5><b><%= userdata[0].lastname + userdata[0].firstname %></b></h5></span> <br>
+                    </div>
+                    <div class="divTicketCode">
+                        <span>예약번호/RESERVATION NO.</span><br>
+                        <span><h5><b><%= userdata[0].id %></span></h5></b><br>
+                    </div>
+                    <% transit = bookCopy.offerItems[0].services[i].segments.length; %>
+                    <% for (j=0; j<transit; j++) {%>
+                        <div class="divTicketCode_2">
+                            <span>출발지/FROM</span><br>
+                            <span><h5><b><%= bookCopy.offerItems[0].services[i].segments[j].flightSegment.departure.iataCode %></b></h5></span><br>
+                        </div>
+                        <div class="divTicketCode_2">
+                            <span>날짜/DATE</span><br>
+                            <span><h5><b><%= bookCopy.offerItems[0].services[i].segments[j].flightSegment.departure.at.substring(0,10) %></b></h5></span><br>
+                        </div>
+                        <div class="divTicketCode_2">
+                            <span>출발시간/DEP</span><br>
+                            <span><h5><b><%= bookCopy.offerItems[0].services[i].segments[j].flightSegment.departure.at.substring(11,16) %></b></h5></span><br>
+                        </div>
+                        <div class="divTicketCode_2">
+                            <span>도착지/TO</span><br>
+                            <span><h5><b><%= bookCopy.offerItems[0].services[i].segments[j].flightSegment.arrival.iataCode %></b></h5></span><br>
+                        </div>                       
+                        <div class="divTicketCode_2">
+                            <span>항공사/AIRLINES</span><br>
+                            <% carr=bookCopy.offerItems[0].services[i].segments[j].flightSegment.carrierCode %>
+                            <span><h5><b><%= dict[0].carriers[carr] %></b></h5></span>
+                        </div>
+                        <div class="divTicketCode_2">
+                            <span>도착시간/ARR</span><br>
+                            <span><h5><b><%= bookCopy.offerItems[0].services[i].segments[j].flightSegment.arrival.at.substring(11,16) %></b></h5></span><br>
+                        </div>
+                        <% if (j != (transit-1)) { %>
+                            <div style="position: relative; bottom: 15px;">ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ</div>
+                        <%}%>
+                    <%}%>
+                </div>
+            <%}%><br><br><br>
+        </div>
+    </div>    
+</div>
+</body>

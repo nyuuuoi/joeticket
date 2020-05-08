@@ -1,0 +1,331 @@
+<link rel='stylesheet' href='https://zoeticket.s3.us-east-2.amazonaws.com/public/stylesheets/style.css' />
+
+<!-- Container Collapse(Showing and hiding content) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<style>
+    .divTicketTable{
+        width : 700px;
+        height : 235px;
+        padding : 12px;
+        border-bottom-left-radius: 6px;
+        border-top-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        border-top-right-radius: 6px;
+        border-color :rgb(64, 64, 64);
+        border-style: solid;
+        border-width: 1px;
+    }
+    .divTicketBody, .divTicketBodyVia{
+        height : 103px;
+        width : 676px;
+    }
+    /* Set to horizontal for divs_Ticket */
+    .divTicketFloat{
+        float: left;
+        padding-top:15px;
+        color : rgb(64, 64, 64);
+    }
+    .divTicketCodeImage{                       
+        height : 103px;
+        width : 20%;        
+    }
+    .divTicketCode{  
+        padding-top : 10px;      
+        height: 70px;
+        text-align: center;
+        font-size : 13px;
+        color :rgb(64, 64, 64); 
+    }
+    .divTicketCode img{
+        width : 110px;
+        height : auto;
+    }
+    .divTicketCodeMultiOperation{        
+        margin-left : 10px;
+        height : 23px;
+        width : 500px;
+        text-align: left;
+        font-size : 12px;        
+        color :rgb(64, 64, 64);       
+    }
+    .divTicketDeparture{
+        height : 103px;
+        width : 15%;
+        text-align: right;
+    }
+    .divTicketDepTime{
+        font-weight:bold;
+        font-size :14pt;
+    }
+    .divTicketStopContainer{
+        height : 103px;
+        width : 20%;
+        text-align: center;
+        padding-left : 10px;
+        padding-right : 10px;
+    }
+    .divTicketStopTime{
+        font-size:9pt;
+        line-height: 5px;
+    }
+    .divTicketStopAirIcon img{
+        width: 100%;
+        height: auto;
+        padding-top:3px;
+        
+    }
+    .divTicketStopStraight{
+        font-size:9pt;
+        color:#00d775;
+    }
+    .divTicketStopvia{
+        font-size:9pt;
+    }
+    .spanTicketStopvia{
+        color:#ff5452;
+    }
+    .divTicketArrival{
+        height : 103px;
+        width : 15%;
+        text-align: left;
+    }
+    .divTicketArrTime{
+        font-weight:bold;
+        font-size :14pt;
+    }
+    /* Ticket Fare and Container */
+    .divTicketFareAndContainer{
+        position: relative;
+        top : 62px;
+    }
+    /* Ticket Fare */
+    .divTicketFareContainer{
+        height : 103px;
+        width : 20%;
+        text-align: center;
+    }
+    .divTicketFare{
+        font-weight:bold;
+        font-size :18pt;
+    }
+    .divTicketFaretext{
+        font-size : 10pt;
+    }
+    /* Ticket Fare Via */
+    .divTicketFareContainerVia{
+        height : 103px;
+        width : 20%;
+        text-align: center;
+    }
+    /* Ticket Button */
+    .divTicketButtonContainer{
+        height : 103px;
+        width : 10%;
+        text-align: center;
+    }
+    .rotated{
+        transform: rotate(180deg);
+    }
+
+    /* TicketRoute (Hidden) */
+    .divTicketRouteContainer{
+        display : none;
+        width : 700px;
+        height : auto;
+        padding : 12px;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        border-color: white;
+        border-bottom-color :rgb(64, 64, 64);
+        border-right-color :rgb(64, 64, 64);
+        border-left-color :rgb(64, 64, 64);
+        border-style: solid;
+        border-width: 1px;
+        margin-top : -20px;
+    }
+
+    .test01{
+        position: relative;
+        height : 100px;
+        width : 650px;
+        left: 10px;
+    }
+    .test02{
+        position: relative;
+        left: 10px;
+        top: 6px;
+        font-family: "맑은 고딕";
+    }
+
+    .test03{
+        position: relative;
+        height : 100px;
+        width : 650px;
+        left: 10px;
+    }
+    .test04{
+        position: relative;
+        left: 10px;
+        top: 6px;
+        font-family: "맑은 고딕";
+    }
+
+    .divTicketRoute{
+        position: relative;
+        top: 5px;
+        height : 100px;
+        width : 676px;
+    }
+
+    .empty1{
+        position: relative;
+        left: 10px;
+        font-size: 14px; 
+        font-weight:bold;
+        border-top-color:rgb(202, 202, 202);
+        border-top-style:solid;
+        border-top-width:2px;
+        box-sizing:border-box;
+        break-inside:avoid;
+        display:block;
+        height: 15px;
+    }
+
+    .empty2{
+        padding-top: 8px;
+    }
+
+    /* Set to horizontal for divs_Ticket */
+    .divRouteFloat{
+        float: left;
+        padding-top:10px;        
+    }
+    .divRouteStopContainer{
+        height : 103px;
+        width : 28%;
+        text-align: left;
+        margin-left : 25px;        
+    }
+    .divRouteStopFloat{
+        float: left;
+    }
+    .divRouteStopTime{
+        width: 100px;  
+        height: 20%; 
+        line-height: 70px;
+        margin-top : 2px;
+        font-size : 12pt;
+    }
+    .divRouteStopIcon img{
+        width: 55px;
+        height: 55px;
+        margin-top: 3px;
+    }
+    .divRouteStopIcon{
+        margin-top:8px;                
+    }
+    .divRouteTimeContainer{
+        height : 103px;
+        width : 10%;
+        text-align: left;
+        font-size : 13pt;      
+    }
+    .divRouteTimeDeparture{
+        line-height: 40px;
+    }
+    .divRouteRouteContainer{
+        height : 103px;
+        width : 50%;
+        text-align: left;
+        font-size : 13pt;
+    }
+    .divRouteRouteDeparture{
+        line-height: 40px;
+    }
+    
+    .divTicketRouteConnectionRow{
+        position: relative;
+        left: 10px;
+        height : 50px;
+        width : 650px;
+        border-bottom-left-radius: 6px;
+        border-top-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        border-top-right-radius: 6px;
+        background-color : rgb(231, 232, 236); 
+        display: table-cell; 
+        vertical-align: middle;
+        margin-top: 0px;
+    }
+    .divTicketRouteChangefloat{
+        float: left;
+    }
+    .divTicketRouteChangeTime{
+        width : 100px;  
+        height : 45px; 
+        line-height : 45px;
+        text-align : left;
+        font-size : 12pt;
+        margin-left : 26px;
+        color: #ff5452;
+    }
+    .divTicketRouteChangeAirport{
+        width : 190px;  
+        height : 45px; 
+        line-height : 45px;
+        text-align : left;
+        margin-left : 85px;
+        font-size : 14pt;
+        color: #ff5452;
+    }
+    .divTicketRouteChangeText{
+        width : 160px;  
+        height : 45px; 
+        line-height : 45px;
+        text-align : left;
+        font-size : 14pt;
+        font-weight: bold;
+        color: #ff5452;
+    }
+
+    /* Last route Connection Row */
+    .divTicketRouteConnectionLast{
+        height : 30px;
+        width : 676px;
+        margin-left : 15px;      
+    }
+    .divTicketRouteArrives{
+        margin-left : 20px;
+        font-size : 10pt;
+    }
+    .divTicketRouteBar{
+        color: #6c757d;
+        font-size : 8pt;
+        font-weight: bold;
+        margin-left : 15px;
+        margin-right : 15px;
+        margin-top : 2px;
+    }
+    .divTicketRouteDuration{
+        font-size : 10pt;
+    }
+    .divTicketRouteLastText{
+        font-weight: bold;
+    }
+    .hiddenInput{
+        display : none;
+    }
+</style>
+
+<style type="text/css">
+    a:link { color: rgb(64, 64, 64); text-decoration: none;}
+    a:visited { color: rgb(64, 64, 64); text-decoration: none;}
+    a:hover { color: rgb(64, 64, 64)e; text-decoration: none;}
+</style>

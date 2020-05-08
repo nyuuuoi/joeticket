@@ -1,0 +1,85 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.547.0.min.js"></script>
+    <title>Zoe Ticket : Payment</title>
+    <style>
+        .hiddenMongoId {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hiddenMongoId">
+        <input id="flightsId" value="<%= price %>">
+        <input id="flightsId22" value="<%= rese %>">
+        <input id="username" value="<%= user.lastname + user.firstname %>">
+        <input id="departure" value="<%= departure %>">
+        <input id="arrival" value="<%= arrival %>">
+        <input id="phone" value="<%= user.phone %>">
+        <input id="depdate" value="<%= depdate %>">
+    </div>
+    <script>
+        AWS.config = new AWS.Config();
+        AWS.config.accessKeyId = "AKIAYFLRXEYLC2DNY3VA";
+        AWS.config.secretAccessKey = "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";
+
+        var IMP = window.IMP;
+        IMP.init('imp68762641');
+
+        var msg;
+        IMP.request_pay({
+            pg: 'kakao', // version 1.1.0부터 지원.
+            pay_method: 'card',
+            merchant_uid: 'merchant_' + new Date().getTime(),
+            name: '조이티켓 ' + $('#departure').val() + ' - ' + $('#arrival').val() + ' 예매',
+            amount: $('#flightsId').val(),
+            buyer_email: 'iamport@siot.do',
+            buyer_name: $('#username').val(),
+            buyer_tel: $('#phone').val(),
+            buyer_addr: '서울특별시 강남구 삼성동',
+            buyer_postcode: '123-456'
+        }, function (rsp) {
+            if (rsp.success) {
+                var msg = '결제가 완료되었습니다.\n';
+                msg += '예약번호 : ' + $('#flightsId22').val();
+                msg += '\n예약번호 저장해줘!!!!!!!!!!!!!!!!!!!!!!'
+                sms($('#phone').val(), $('#departure').val(), $('#arrival').val(), $('#flightsId22').val(), $('#username').val(), $('#depdate').val())
+                alert(msg);
+
+                location.href = '/'
+            } else {
+                var msg = '결제에 실패하였습니다.';
+                msg += '에러내용 : ' + rsp.error_msg;
+                alert(msg);
+                history.back()
+                history.back()
+                history.back()
+            }
+        });
+        function sms(phonenum, departure, arrival, resvNum, usname, depdate) {
+            var params = {
+                Message: '[ZoeTicket]\n▶예약자:' + usname + '\n▶예매번호:' + resvNum + '\n▶구간:' + departure + '-' + arrival + '\n▶출발일자:' + depdate,
+                PhoneNumber: '+82' + phonenum
+            };
+            var publishTextPromise = new AWS.SNS({ apiVersion: '2010-03-31', region: 'us-west-2' }).publish(params).promise();
+            publishTextPromise.then(
+                function (data) {
+                    console.log(params);
+                }
+            ).catch(
+                function (err) {
+                    console.error(err);
+                }
+            );
+        }
+    </script>
+</body>
+
+</html>

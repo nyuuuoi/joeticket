@@ -1,0 +1,75 @@
+<!-- Optional JavaScript -->
+    <!-- Print Airline Route -->
+    <script>
+        // Show all routes for a flight trip
+        $(".showdiv").click(function(e) {
+            var $th = $(e.target);
+            var num = $th.attr("whereid");
+            if ($("#route"+num).css("display") === "none") {
+                $("#route"+num).show();
+                $("#container"+num).addClass("rotated");
+                $("#table"+num).css("border-bottom-right-radius", "0px");
+                $("#table"+num).css("border-bottom-left-radius", "0px");
+                $("#table"+num).css("border-color", "white");
+                $("#table"+num).css("border-top-color", "rgb(64, 64, 64");
+                $("#table"+num).css("border-right-color", "rgb(64, 64, 64");
+                $("#table"+num).css("border-left-color", "rgb(64, 64, 64");
+                
+            } else {
+                $("#route"+num).hide();
+                $("#container"+num).removeClass("rotated");
+                $("#table"+num).css("border-bottom-right-radius", "6px")
+                $("#table"+num).css("border-bottom-left-radius", "6px")
+                $("#table"+num).css("border-color", "rgb(64, 64, 64)");
+            }            
+        });
+        // Show right search panel for re-search new flights
+        $(".showRight").click(function() {
+            if ($("#hiddenRight").css("display") === "none") {
+                $("#hiddenRight").show();
+                $(".showRight").addClass("rotated");
+            } else {
+                $("#hiddenRight").hide();
+                $(".showRight").removeClass("rotated");
+            }            
+        });
+
+        // Get data from url for easy choose
+        $(".showRight").click(function() {
+            var _getArray = ["tripstart", "tripend", "tripdate"]
+            var _keyArray_oneway = ["navOriginDeparture_Oneway", "navOriginArrival_Oneway", "navOriginCalDeparture_Oneway"] // , "navOriginCalArrival"
+            var _keyArray_return = ["navOriginDeparture_Return", "navOriginArrival_Return", "navOriginCalDeparture_Return"] // , "navOriginCalArrival"
+            var _tempUrl = $(location).attr('href'); //url 가져오기
+            var _tempQuery = _tempUrl.split("?")[1];            
+            var _tempArray = _tempQuery.split('&'); // '&'을 기준으로 분리하기 
+            for(var i=0; _tempArray.length; i++) { 
+                var _keyValuePair = _tempArray[i].split('='); // '=' 을 기준으로 분리하기 
+                
+                if(_keyValuePair[0] == _getArray[i]){ // _keyValuePair[0] : 파라미터 명 & _keyValuePair[1] : 파라미터 값 
+                    if(i===2){
+                        $("#"+_keyArray_oneway[i]).val(_keyValuePair[1].substring(0,10));
+                        $("#"+_keyArray_return[i]).val(_keyValuePair[1].substring(0,10));
+                    } else {
+                        $("#"+_keyArray_oneway[i]).val(_keyValuePair[1]);
+                        $("#"+_keyArray_return[i]).val(_keyValuePair[1]);
+                    }                    
+                }
+            }           
+        });
+
+        // Button which submits new data from right search box
+        $("#navOriginSubmitOneway").click(function() {
+            $( "#reSearchFormOneway" ).submit();
+        });
+        $("#navOriginSubmitReturn").click(function() {
+            $( "#reSearchFormReturn" ).submit();
+        });
+
+        // Tooltip scripts
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+    </script>
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
